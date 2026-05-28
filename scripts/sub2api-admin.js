@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const BASE_URL = (process.env.SUB2API_BASE_URL || "http://170.106.140.128:8080").replace(/\/$/, "");
+const BASE_URL = (process.env.SUB2API_BASE_URL || "").replace(/\/$/, "");
 const ADMIN_API_KEY = process.env.SUB2API_ADMIN_API_KEY || "";
 
 function usage() {
@@ -44,6 +44,7 @@ function parseArgs(argv) {
 }
 
 function authHeaders() {
+  if (!BASE_URL) throw new Error("Missing SUB2API_BASE_URL");
   if (ADMIN_API_KEY) return { "x-api-key": ADMIN_API_KEY };
   throw new Error("Missing SUB2API_ADMIN_API_KEY");
 }

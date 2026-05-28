@@ -27,7 +27,7 @@ sub2api-admin/
 只使用管理员 API Key：
 
 ```bash
-export SUB2API_BASE_URL='http://170.106.140.128:8080'
+export SUB2API_BASE_URL='https://your-sub2api-host'
 export SUB2API_ADMIN_API_KEY='<your-admin-api-key>'
 ```
 

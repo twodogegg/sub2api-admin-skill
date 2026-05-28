@@ -5,7 +5,7 @@
 需要配置：
 
 ```bash
-export SUB2API_BASE_URL='http://170.106.140.128:8080'
+export SUB2API_BASE_URL='https://your-sub2api-host'
 export SUB2API_ADMIN_API_KEY='<admin api key>'
 ```
 

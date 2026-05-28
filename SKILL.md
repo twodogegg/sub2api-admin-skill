@@ -1,6 +1,6 @@
 ---
 name: sub2api-admin
-description: 管理 Sub2API 后台的账号与基础管理接口，支持列表、查询、删除、只保留指定账号、按模板账号批量导入 JSON、调用管理员 API。Use when 用户提到 Sub2API、170.106.140.128:8080、管理员 API Key、账号管理、批量导入账号、保留某个账号删除其他账号，或要通过 API 管理 Sub2API 后台。
+description: 管理 Sub2API 后台的账号与基础管理接口，支持列表、查询、删除、只保留指定账号、按模板账号批量导入 JSON、调用管理员 API。Use when 用户提到 Sub2API、管理员 API Key、账号管理、批量导入账号、保留某个账号删除其他账号，或要通过 API 管理 Sub2API 后台。
 ---
 
 # Sub2API Admin
@@ -10,7 +10,7 @@ description: 管理 Sub2API 后台的账号与基础管理接口，支持列表�
 优先使用自带 CLI，而不是临时手写 `curl`：
 
 ```bash
-export SUB2API_BASE_URL='http://170.106.140.128:8080'
+export SUB2API_BASE_URL='https://your-sub2api-host'
 export SUB2API_ADMIN_API_KEY='<admin api key>'
 
 node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts list
