@@ -1,13 +1,11 @@
 ---
 name: sub2api-admin
-description: 管理 Sub2API 后台的账号与基础管理接口，支持列表、查询、删除、只保留指定账号、按模板账号批量导入 JSON、调用管理员 API。Use when 用户提到 Sub2API、管理员 API Key、账号管理、批量导入账号、保留某个账号删除其他账号，或要通过 API 管理 Sub2API 后台。
+description: Manage Sub2API admin APIs for accounts, groups, proxies, error passthrough rules, TLS fingerprint profiles, imports, exports, batch updates, and raw administrator API calls. Use when the user mentions Sub2API, admin API keys, account management, bulk account import/export, keeping or deleting accounts, refreshing accounts, clearing errors, CRS sync, or managing Sub2API backend settings through the admin API.
 ---
 
 # Sub2API Admin
 
-## Quick Start
-
-优先使用自带 CLI，而不是临时手写 `curl`：
+Use the bundled CLI instead of ad hoc `curl`.
 
 ```bash
 export SUB2API_BASE_URL='https://your-sub2api-host'
@@ -16,66 +14,31 @@ export SUB2API_ADMIN_API_KEY='<admin api key>'
 node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts list
 ```
 
-需要参数和返回说明时，查看 [REFERENCE.md](REFERENCE.md)。
+For all commands and payload examples, read [references/admin-cli.md](references/admin-cli.md).
 
-## Workflows
+## Workflow
 
-### 1. 建立连接
+1. Reuse `SUB2API_BASE_URL` and `SUB2API_ADMIN_API_KEY` from the environment.
+2. Run read-only commands first: `accounts list`, `accounts get <id>`, `groups all`, or `proxies all`.
+3. Before destructive or bulk writes, print the target account names and IDs.
+4. Execute the write command only after the target set is clear.
+5. Run a follow-up read command to verify the result.
 
-1. 优先复用环境变量：
-   - `SUB2API_BASE_URL`
-   - `SUB2API_ADMIN_API_KEY`
-2. 只使用 `SUB2API_ADMIN_API_KEY`。
-3. 如果 `x-api-key` 返回 `INVALID_ADMIN_KEY`，说明管理员 API Key 已失效，让用户重新生成管理员 API Key。
-
-### 2. 账号查询与核对
-
-常用顺序：
-
-1. `accounts list`
-2. `accounts get <id>`
-3. 对照目标账号，确认：
-   - `concurrency`
-   - `priority`
-   - `group_ids`
-   - `credentials.model_mapping`
-
-### 3. 删除与清理
-
-删除前先列出目标账号名和 ID，再执行删除。
-
-- 删除单个：`accounts delete <id>`
-- 只保留某个名字：`accounts keep-only --name '<email>'`
-
-### 4. JSON 批量导入
-
-用于导入 Sub2API 导出 JSON 或同结构账号清单。
-
-1. 先选一个模板账号，读取它的配置。
-2. 复制模板的这些字段到待导入账号：
-   - `concurrency`
-   - `priority`
-   - `group_ids`
-   - `credentials.model_mapping`
-3. 跳过模板账号自身，避免重复导入。
-4. 导入后回查列表，确认数量和关键字段。
-
-建议直接用：
+## Common Commands
 
 ```bash
-node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts import-json \
-  --file /path/accounts.json \
-  --template-name 'CoraimaInglehart055494+PayPal3@outlook.com'
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts list --page-size 20
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts get 40
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts usage 40
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts set-schedulable 40 true
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js accounts bulk-update --ids 40,39 --json '{"concurrency":10}'
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js error-rules list
+node ~/.agents/skills/sub2api-admin/scripts/sub2api-admin.js tls-profiles list
 ```
 
-### 5. 批量操作原则
+## Safety Notes
 
-1. 先查，后改，最后回查。
-2. 变更线上数据前，明确目标集合。
-3. 不确定接口时，优先只读验证，不盲写。
-
-## Notes
-
-- 默认 API 前缀是 `<base>/api/v1/admin`
-- 后台鉴权只使用 `x-api-key: <admin-api-key>`
-- 不要在 skill 文件里硬编码真实密钥；用环境变量或当前会话传入。
+- Authentication uses only `x-api-key`.
+- If the API returns `INVALID_ADMIN_KEY`, ask the user to regenerate the admin API key.
+- `accounts export` includes credentials and tokens. Prefer `--file` and avoid printing exports in chat.
+- For uncertain or newly added backend APIs, use `api <METHOD> <admin-path>` after a read-only check.
